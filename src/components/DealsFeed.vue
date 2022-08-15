@@ -11,9 +11,8 @@ interface gameDeal {
 }
 
 const __API_URL__ = "https://sd.janezsite.com/api"
-let gameDealsArray: gameDeal[] = []
 
-const gameDealsCopy = ref<gameDeal[]>(gameDealsArray)
+const gameDealsArr = ref<gameDeal[]>([])
 
 const gameTitle = ref<HTMLInputElement | null>(null)
 
@@ -26,7 +25,7 @@ const errorFetching = ref(false)
 async function getDeals() {
     if (gameTitle !== null && minPrice !== null && maxPrice !== null) {
         if(minPrice.value?.value==="" ||maxPrice.value?.value===""){
-            return gameDealsArray
+            return gameDealsArr.value
         }
         try {
             const res = await fetch(
@@ -43,14 +42,12 @@ async function getDeals() {
     }
 }
 onMounted(async () => {
-    gameDealsArray = await getDeals()
-    gameDealsCopy.value = gameDealsArray
+    gameDealsArr.value = await getDeals()
 })
 
 async function handleSubmit() {
     const data = await getDeals()
-    gameDealsArray = data
-    gameDealsCopy.value = data
+    gameDealsArr.value = data
 }
 
 </script>
@@ -101,13 +98,13 @@ async function handleSubmit() {
         <div
             class="flex flex-wrap mt-4"
             v-else-if="
-                gameDealsCopy !== undefined &&
-                gameDealsCopy !== null &&
-                gameDealsCopy.length >= 1
+                gameDealsArr !== undefined &&
+                gameDealsArr !== null &&
+                gameDealsArr.length >= 1
             "
         >
             <DealCard
-                v-for="deal in gameDealsCopy"
+                v-for="deal in gameDealsArr"
                 :base-price="deal.originalPrice"
                 :new-price="deal.discountPrice"
                 :rating="deal.steamRating"
